@@ -1,0 +1,10 @@
+button, select, option {
+	cursor: pointer;
+}
+
+.module {
+	display: block;
+	float: left;
+	border: 1px solid #06F;
+	width: 32%;
+}
