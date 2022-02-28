@@ -1,25 +1,29 @@
 import {StringTool} from './StringTool.js';
+import {Event} from './Event.js';
+import {EventDispatcher} from './EventDispatcher.js';
 
-export class SpreadSheetUploader {
+export class SpreadSheetUploader extends EventDispatcher {
 	
+	static FILE_IMPORTED_EVENT = 'file uploaded';
+
+	type = 'SpreadSheetUploader';
 	DOMElement = null;
-	backendScriptURL = 'backend/GED/import-datas.php';
-	self = null;
+	backendScriptURL = './backend/import-datas-file.php';
 	fileInfos = null;
 	allowedFileExtensions = ['ods', 'xls', 'xlsx'];
 	maxFileSize = 2097152;
 
 	constructor(relativeDOMElement) {
+		super();
 		if(relativeDOMElement !== null) {
 			this.DOMElement = relativeDOMElement;
 			this.setSubmitButtonBehavior();	
 		}
-		self = this;
 	}
 
 	checkIfSelectedFileIsOK(fileInfos) {
 		if(fileInfos === null) {
-			throw new Error('SpreadSheetUploader.checkIfSelectedFileIsOK error because not file information have been given as parameter');
+			throw new Error('SpreadSheetUploader.checkIfSelectedFileIsOK error because no file information have been given as parameter');
 			return { success: false, error: 'no file info', code: 0 };
 		} else {
 
@@ -49,36 +53,40 @@ export class SpreadSheetUploader {
 	}
 
 	async sendFormularData() {
-		let fetchResponse = await fetch('./backend/import-datas.php', {
+		let fetchResponse = await fetch(this.backendScriptURL, {
 			method: 'POST',
 			credentials: 'same-origin',
 			body: new FormData(this.DOMElement.querySelector('form'))
 		});
 
 		if(fetchResponse.status != 200)
-	    	throw new Error('Can not communicate with server (no 200 status)');
+	    	throw new Error('Impossible de charger les script serveur (erreur 200 status)');
 
 	    let response = await fetchResponse.json();
+	    if(response.success) {
+	    	this.dispatchEvent(new Event(SpreadSheetUploader.FILE_IMPORTED_EVENT));
+	    }
 	}
 
 	setSubmitButtonBehavior() {
 		let submitButton = this.DOMElement.querySelector('button[name=submit]');
-		submitButton.addEventListener('click', function(event) {
-			event.preventDefault();
 
-			try {
-				let fileInfos = self.getSelectedFileInfo();
-				var selectedFileIsOK = self.checkIfSelectedFileIsOK(fileInfos);
+		submitButton.addEventListener('click', this.validateFormular.bind(this), false);
+	}
 
-				if(selectedFileIsOK.success == false) {
-					console.log(selectedFileIsOK.error);
-				} else {
-					let uploadResponse = self.sendFormularData();
-				}
-			} catch(error) {
-				console.log(error);
+	validateFormular(event) {
+		event.preventDefault();
+		try {
+			let fileInfos = this.getSelectedFileInfo();
+			var selectedFileIsOK = this.checkIfSelectedFileIsOK(fileInfos);
+
+			if(selectedFileIsOK.success == false) {
+				console.log(selectedFileIsOK.error);
+			} else {
+				let uploadResponse = this.sendFormularData();
 			}
-
-		})
+		} catch(error) {
+			console.log(error);
+		}
 	}
 }

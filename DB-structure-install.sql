@@ -1,10 +1,10 @@
-CREATE TABLE IF NOT EXISTS profiles(
+CREATE TABLE profiles(
    profile_id INT AUTO_INCREMENT,
    name VARCHAR(127),
    PRIMARY KEY(profile_id)
 );
 
-CREATE TABLE IF NOT EXISTS workers(
+CREATE TABLE workers(
    worker_id INT AUTO_INCREMENT,
    name VARCHAR(127),
    birth_name VARCHAR(127),
@@ -14,21 +14,21 @@ CREATE TABLE IF NOT EXISTS workers(
    PRIMARY KEY(worker_id)
 );
 
-CREATE TABLE IF NOT EXISTS formation_tracks(
+CREATE TABLE formation_tracks(
    formtrack_id INT AUTO_INCREMENT,
    name VARCHAR(127),
    gaia_code VARCHAR(20),
    PRIMARY KEY(formtrack_id)
 );
 
-CREATE TABLE IF NOT EXISTS formation_bricks(
+CREATE TABLE formation_bricks(
    brick_id INT AUTO_INCREMENT,
    name VARCHAR(127),
    content_description VARCHAR(500),
    PRIMARY KEY(brick_id)
 );
 
-CREATE TABLE IF NOT EXISTS sessions(
+CREATE TABLE sessions(
    session_id INT AUTO_INCREMENT,
    session_date DATE,
    fk_brick_id INT NOT NULL,
@@ -36,44 +36,44 @@ CREATE TABLE IF NOT EXISTS sessions(
    FOREIGN KEY(fk_brick_id) REFERENCES formation_bricks(brick_id)
 );
 
-CREATE TABLE IF NOT EXISTS types_of_positions(
+CREATE TABLE types_of_positions(
    type_of_position_id INT AUTO_INCREMENT,
    label VARCHAR(50),
    PRIMARY KEY(type_of_position_id)
 );
 
-CREATE TABLE IF NOT EXISTS areas(
+CREATE TABLE areas(
    areas_id INT AUTO_INCREMENT,
    label VARCHAR(32),
    PRIMARY KEY(areas_id)
 );
 
-CREATE TABLE IF NOT EXISTS levels(
+CREATE TABLE levels(
    level_id INT AUTO_INCREMENT,
    name VARCHAR(50),
    PRIMARY KEY(level_id)
 );
 
-CREATE TABLE IF NOT EXISTS specialities(
+CREATE TABLE specialities(
    speciality_id INT AUTO_INCREMENT,
    label VARCHAR(50),
    diploma_label VARCHAR(50),
    PRIMARY KEY(speciality_id)
 );
 
-CREATE TABLE IF NOT EXISTS GED_file_types(
-   GED_file_types_Id INT AUTO_INCREMENT,
+CREATE TABLE EDM_file_types(
+   EDM_file_type_id INT AUTO_INCREMENT,
    name VARCHAR(50),
-   PRIMARY KEY(GED_file_types_Id)
+   PRIMARY KEY(EDM_file_type_id)
 );
 
-CREATE TABLE IF NOT EXISTS GED_file_states(
-   GED_file_state_Id INT AUTO_INCREMENT,
+CREATE TABLE EDM_file_states(
+   EDM_file_state_id INT AUTO_INCREMENT,
    name VARCHAR(50),
-   PRIMARY KEY(GED_file_state_Id)
+   PRIMARY KEY(EDM_file_state_id)
 );
 
-CREATE TABLE IF NOT EXISTS users(
+CREATE TABLE users(
    user_id INT AUTO_INCREMENT,
    login VARCHAR(127),
    email VARCHAR(128),
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS users(
    FOREIGN KEY(fk_worker_id) REFERENCES workers(worker_id)
 );
 
-CREATE TABLE IF NOT EXISTS schools(
+CREATE TABLE schools(
    UAI VARCHAR(8),
    name VARCHAR(50),
    address VARCHAR(127),
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS schools(
    FOREIGN KEY(fk_areas_id) REFERENCES areas(areas_id)
 );
 
-CREATE TABLE IF NOT EXISTS classes(
+CREATE TABLE classes(
    class_id INT AUTO_INCREMENT,
    period VARCHAR(4) NOT NULL,
    level VARCHAR(25) NOT NULL,
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS classes(
    FOREIGN KEY(fk_UAI) REFERENCES schools(UAI)
 );
 
-CREATE TABLE IF NOT EXISTS positions(
+CREATE TABLE positions(
    position_id INT AUTO_INCREMENT,
    gaia_id SMALLINT,
    fk_type_of_position_id INT NOT NULL,
@@ -116,18 +116,18 @@ CREATE TABLE IF NOT EXISTS positions(
    FOREIGN KEY(fk_type_of_position_id) REFERENCES types_of_positions(type_of_position_id)
 );
 
-CREATE TABLE IF NOT EXISTS GED_files(
-   GED_files_Id INT AUTO_INCREMENT,
+CREATE TABLE EDM_files(
+   EDM_file_id INT AUTO_INCREMENT,
    original_name VARCHAR(255),
    uri VARCHAR(255),
    fk_user_id INT NOT NULL,
-   fk_GED_file_types_Id INT,
-   PRIMARY KEY(GED_files_Id),
+   fk_EDM_file_type_id INT,
+   PRIMARY KEY(EDM_file_id),
    FOREIGN KEY(fk_user_id) REFERENCES users(user_id),
-   FOREIGN KEY(fk_GED_file_types_Id) REFERENCES GED_file_types(GED_file_types_Id)
+   FOREIGN KEY(fk_EDM_file_type_id) REFERENCES EDM_file_types(EDM_file_type_id)
 );
 
-CREATE TABLE IF NOT EXISTS formbricks_belong_to_formtracks(
+CREATE TABLE formbricks_belong_to_formtracks(
    fk_formtrack_id INT,
    fk_brick_id INT,
    PRIMARY KEY(fk_formtrack_id, fk_brick_id),
@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS formbricks_belong_to_formtracks(
    FOREIGN KEY(fk_brick_id) REFERENCES formation_bricks(brick_id)
 );
 
-CREATE TABLE IF NOT EXISTS workers_follow_sessions(
+CREATE TABLE workers_follow_sessions(
    fk_worker_id INT,
    fk_session_id INT,
    PRIMARY KEY(fk_worker_id, fk_session_id),
@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS workers_follow_sessions(
    FOREIGN KEY(fk_session_id) REFERENCES sessions(session_id)
 );
 
-CREATE TABLE IF NOT EXISTS workers_lead_sessions(
+CREATE TABLE workers_lead_sessions(
    fk_worker_id INT,
    fk_session_id INT,
    PRIMARY KEY(fk_worker_id, fk_session_id),
@@ -151,7 +151,7 @@ CREATE TABLE IF NOT EXISTS workers_lead_sessions(
    FOREIGN KEY(fk_session_id) REFERENCES sessions(session_id)
 );
 
-CREATE TABLE IF NOT EXISTS workers_teach_in_classes(
+CREATE TABLE workers_teach_in_classes(
    fk_worker_id INT,
    fk_class_id INT,
    monday_am TINYINT,
@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS workers_teach_in_classes(
    FOREIGN KEY(fk_class_id) REFERENCES classes(class_id)
 );
 
-CREATE TABLE IF NOT EXISTS workers_occupy_positions(
+CREATE TABLE workers_occupy_positions(
    fk_worker_id INT,
    fk_position_id INT,
    period VARCHAR(4),
@@ -179,7 +179,7 @@ CREATE TABLE IF NOT EXISTS workers_occupy_positions(
    FOREIGN KEY(fk_position_id) REFERENCES positions(position_id)
 );
 
-CREATE TABLE IF NOT EXISTS positions_concern_areas(
+CREATE TABLE positions_concern_areas(
    fk_position_id INT,
    fk_areas_id INT,
    PRIMARY KEY(fk_position_id, fk_areas_id),
@@ -187,16 +187,16 @@ CREATE TABLE IF NOT EXISTS positions_concern_areas(
    FOREIGN KEY(fk_areas_id) REFERENCES areas(areas_id)
 );
 
-CREATE TABLE IF NOT EXISTS headcounts(
+CREATE TABLE levels_concern_classes(
    fk_class_id INT,
    fk_level_id INT,
-   quantity TINYINT,
+   headcount TINYINT,
    PRIMARY KEY(fk_class_id, fk_level_id),
    FOREIGN KEY(fk_class_id) REFERENCES classes(class_id),
    FOREIGN KEY(fk_level_id) REFERENCES levels(level_id)
 );
 
-CREATE TABLE IF NOT EXISTS positions_concern_schools(
+CREATE TABLE positions_concern_schools(
    fk_UAI VARCHAR(8),
    fk_position_id INT,
    PRIMARY KEY(fk_UAI, fk_position_id),
@@ -204,7 +204,7 @@ CREATE TABLE IF NOT EXISTS positions_concern_schools(
    FOREIGN KEY(fk_position_id) REFERENCES positions(position_id)
 );
 
-CREATE TABLE IF NOT EXISTS workers_have_specialities(
+CREATE TABLE workers_have_specialities(
    fk_worker_id INT,
    fk_speciality_id INT,
    PRIMARY KEY(fk_worker_id, fk_speciality_id),
@@ -212,10 +212,13 @@ CREATE TABLE IF NOT EXISTS workers_have_specialities(
    FOREIGN KEY(fk_speciality_id) REFERENCES specialities(speciality_id)
 );
 
-CREATE TABLE IF NOT EXISTS GED_file_has_state(
-   fk_GED_files_Id INT,
-   fk_GED_file_state_Id INT,
-   PRIMARY KEY(fk_GED_files_Id, fk_GED_file_state_Id),
-   FOREIGN KEY(fk_GED_files_Id) REFERENCES GED_files(GED_files_Id),
-   FOREIGN KEY(fk_GED_file_state_Id) REFERENCES GED_file_states(GED_file_state_Id)
+CREATE TABLE EDM_files_have_states(
+   fk_user_id INT,
+   fk_EDM_file_id INT,
+   fk_EDM_file_state_id INT,
+   setting_date DATETIME,
+   PRIMARY KEY(fk_user_id, fk_EDM_file_id, fk_EDM_file_state_id),
+   FOREIGN KEY(fk_user_id) REFERENCES users(user_id),
+   FOREIGN KEY(fk_EDM_file_id) REFERENCES EDM_files(EDM_file_id),
+   FOREIGN KEY(fk_EDM_file_state_id) REFERENCES EDM_file_states(EDM_file_state_id)
 );

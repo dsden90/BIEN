@@ -2,14 +2,24 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>Nove</title>
+	<title>BIEN Pajitnov</title>
+	<link rel="icon" type="image/x-icon" href="./favicon.ico">
 	<link rel="stylesheet" type="text/css" href="frontend/styles/common.css" />
 	<script type="module">
 		import {SpreadSheetUploader} from './frontend/js/SpreadSheetUploader.js';
+		import {EDMFileListManager} from './frontend/js/EDMFileListManager.js';
 
 		document.addEventListener('DOMContentLoaded', function() {
-			var sheetUploaderDOMElement = document.querySelector("#sheet-importer");
-			var sheetImporter = new SpreadSheetUploader(sheetUploaderDOMElement);
+			// EDM files list
+			let fileListManager = new EDMFileListManager(document.querySelector("#EDMFileList"));
+			let sheetImporter = new SpreadSheetUploader(document.querySelector("#sheet-importer"));
+
+			fileListManager.loadDatas();
+
+			sheetImporter.addEventListener(
+				SpreadSheetUploader.FILE_IMPORTED_EVENT, 
+				fileListManager.loadDatas.bind(fileListManager)
+			);
 		});
 	</script>
 </head>
@@ -17,13 +27,18 @@
 
 	<div class="module" id="sheet-importer">
 		<h2>Importer un fichier de données</h2>
-    	<form action="backend/import-datas.php" method="post" enctype="multipart/form-data">
+    	<form action="#" method="post" enctype="multipart/form-data">
     		Indiquer la source : 
     		<select name="file-source">
-    			<option value="fiche-ecole">Fiche école</option>
-    			<!-- <option value="export-agape">Export Agape</option> -->
-    			<!-- <option value="export-onde">Export Onde</option> -->
-    			<!-- <option value="export-gaia">Export Gaïa</option> -->
+    			<?php
+	    			require_once('backend/DB/DBQueryHandler.php');
+					$dbHandler = new DBQueryHandler();
+					$EDM_file_types = $dbHandler->select("SELECT * FROM EDM_file_types");
+					$dbHandler->revoke();
+					for($i = 0; $i < count($EDM_file_types); $i++) {
+						print('<option value="'.$EDM_file_types[$i]["EDM_file_type_id"].'">'.$EDM_file_types[$i]["name"].'</option>');
+					}
+				?>
     		</select>
     		<input type="file" name="spreadSheet" id="file-input">
     		<button name="submit">Importer le fichier</button>
@@ -32,15 +47,7 @@
 
 	<div class="module" id="files-list">
 		<h2>Liste des fichiers envoyés</h2>
-		<?php
-	    	$filesDirectory = "backend/GED/files/";
-
-	    	foreach (new DirectoryIterator($filesDirectory) as $fileInfo) {
-	    		if($fileInfo->isFile()) {
-	    			print($fileInfo->getFilename()."<br />\n");
-	    		}
-	    	}
-	    ?>
+		<div id="EDMFileList"></div>
 	</div>
 </body>
 </html>

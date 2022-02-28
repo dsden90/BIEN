@@ -1,5 +1,5 @@
 <?php
-	$filesDirectory = "GED/files/";
+	$filesDirectory = "EDM/files/";
 
 	$errors = []; // Store errors here
 
