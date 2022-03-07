@@ -24,7 +24,6 @@
 	</script>
 </head>
 <body>
-
 	<div class="module" id="sheet-importer">
 		<h2>Importer un fichier de données</h2>
     	<form action="#" method="post" enctype="multipart/form-data">
@@ -44,6 +43,7 @@
     		<button name="submit">Importer le fichier</button>
     	</form>
 	</div>
+
 
 	<div class="module" id="files-list">
 		<h2>Liste des fichiers envoyés</h2>

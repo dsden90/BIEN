@@ -8,9 +8,11 @@ require_once('DB/DBQueryHandler.php');
 
 class FileUploader
 {
-	public $filesDirectory = "EDM/files/";
+
 	public $maxFileSize = 2097152; // 2 Mio
 
+	private $EDMFolder = "EDM";
+	private $filesDirectory = "files";
 	private $fakeName; // name of the physical file on the serveur if real name is hidden
 	private $chosenName; // depends on choice between fake or original name
 	private $file;
@@ -23,6 +25,12 @@ class FileUploader
 
 		$this->file = $file;
 		$this->fakeName = uniqid("EDM_", true);
+
+		if(!is_dir($this->EDMFolder.'/'.$this->filesDirectory)) {
+			if(is_writable($this->EDMFolder)) {
+				mkdir($this->EDMFolder.'/'.$this->filesDirectory);
+			}
+		}
 	}
 
 	function registerFile($nameIsHidden, $fileTypeId) {
@@ -32,10 +40,10 @@ class FileUploader
 
 	private function moveTempFileToServer($nameIsHidden) {
 		$this->chosenName = ($nameIsHidden)?$this->fakeName:basename($this->file['name']);
-		$hasMovedFile = move_uploaded_file($this->file['tmp_name'], $this->filesDirectory.$this->chosenName);
+		$hasMovedFile = move_uploaded_file($this->file['tmp_name'], $this->EDMFolder.'/'.$this->filesDirectory.'/'.$this->chosenName);
 		if(!$hasMovedFile) {
 			throw new Exception("Le fichier n'a pu être écrit sur le serveur.", 2);
-			// throw new Exception("Le fichier n'a pu être écrit sur le serveur. Nom temporaire : ".$this->file['tmp_name']." ; Nom serveur : ".$fileNameOnServeur, 2);
+			// throw new Exception("Le fichier n'a pu être écrit sur le serveur. Nom temporaire : ".$this->file['tmp_name']." ; Nom serveur : ".$this->filesDirectory.$this->chosenName, 2);
 		}
 	}
 

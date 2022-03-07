@@ -13,11 +13,11 @@ class DBConnection {
 	
 	function __construct() {
 		$this->connectionState = 'disconnected';
-		$this->dbServer = "127.0.0.1";
-		$this->dbPort = "3307";
-		$this->dbUser = "bienadmin";
-		$this->dbPassword = "l5_fTr0P#Km";
-		$this->dbName = "bien";
+		$this->dbServer = "localhost";
+		$this->dbPort = "3306";
+		$this->dbUser = "pajitnov";
+		$this->dbPassword = "pajitnov";
+		$this->dbName = "pajitnov";
 		$this->dbLink = null;
 	}
 
