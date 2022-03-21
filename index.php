@@ -49,5 +49,7 @@
 		<h2>Liste des fichiers envoyés</h2>
 		<div id="EDMFileList"></div>
 	</div>
+
+	<div class="overlay">OVERLAY</div>
 </body>
 </html>

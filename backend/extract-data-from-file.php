@@ -23,7 +23,11 @@
 		if($fileInfos['type'] == 1) {
 			require_once('FILES/SchoolSheetExtractor.php');
 			$extractor = new SchoolSheetExtractor($fileInfos['uri']);
-			print("fiche école");
+			$infos = $extractor->extractAll();
+			print('"success": "true", "type": "fiche école",');
+			print('"data": ');
+			print(json_encode($infos));
+			// print(',"debug": '.json_encode($extractor->getWorkers(20)));
 		} else if($fileInfos['type'] == 2) {
 			print('"success": "false",
 			"error": "Les export Agape ne sont pas encore pris en charge"');

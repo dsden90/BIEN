@@ -13,10 +13,10 @@ export class DataWiper extends EventDispatcher {
 		this.backendScriptURL = './backend/DB/'+phpDBScript;
 	}
 
-	// filters: select the datas you want to wiper, can be an id, etc.
+	// filters: select the data you want to wiper, can be an id, etc.
 	// callback:function called when php response loaded
-	async wipeDatas(filters, callback = function(){}) {
-		let postDataBody = {}
+	async wipeData(filters, callback = function(){}) {
+		let postDataBody = {};
 
 		for(let i = 0; i < filters.length; i++) {
 			postDataBody[filters[i][0]] = filters[i][1];

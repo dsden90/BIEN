@@ -78,7 +78,6 @@ CREATE TABLE users(
    login VARCHAR(127),
    email VARCHAR(128),
    passwd VARCHAR(255),
-   profil_type SMALLINT,
    fk_profile_id INT NOT NULL,
    fk_worker_id INT,
    PRIMARY KEY(user_id),
@@ -94,10 +93,12 @@ CREATE TABLE schools(
    zip_code VARCHAR(6),
    uai_email_address VARCHAR(127),
    name_email_address VARCHAR(127),
+   phone_number VARCHAR(50),
    fk_areas_id INT NOT NULL,
    PRIMARY KEY(UAI),
    FOREIGN KEY(fk_areas_id) REFERENCES areas(areas_id)
 );
+
 
 CREATE TABLE classes(
    class_id INT AUTO_INCREMENT,

@@ -1,26 +1,30 @@
 // ask serveur to execute script and return result
 export class ScriptExecutor {
 	
-	backendScriptURL = '';
-	resultingDatas = null;
+	backendScriptName = '';
+	resultingData = null;
+	params = null;
 
 	constructor(phpScript) {
-		this.backendScriptURL = './backend/'+phpDBScript+'.php';
+		this.backendScriptName = './backend/'+phpScript;
 	}
 
-	// callback:function called when data are loaded
-	async executeScript(callback = function(){}, params = null) {
-		let fetchResponse = await fetch(this.backendScriptURL, {
-			method: 'GET'
-		});
-
+	async executeScript(params = {}, callback = function(){}) {
+		let fetchResponse = await fetch(this.backendScriptName,
+			{
+				method: 'POST',
+				body: JSON.stringify(params),
+				headers: {
+					'Content-Type': 'application/json'
+				},
+			}
+		);
 
 		if(fetchResponse.status != 200)
-			throw new Error('Impossible d\'accéder au server (erreur 200 status)');
+			throw new Error('Unable to reach server side script (error: no 200 status)');
 
-		let response = await fetchResponse.json();
-		this.resultingDatas = response;
+		this.resultingData = await fetchResponse.json();
 		callback();
-		return this.resultingDatas;
+		return this.resultingData;
 	}
 }

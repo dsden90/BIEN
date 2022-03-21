@@ -1,12 +1,13 @@
 import {DataWiper} from './DataWiper.js';
 import {DataGrabber} from './DataGrabber.js';
 import {ScriptExecutor} from './ScriptExecutor.js';
+import {SchoolSheetImporter} from './SchoolSheetImporter.js';
 
 export class EDMFileListManager {
 	
 	HTMLContainer = null;
 	HTMLContent = null;
-	datas = null;
+	data = null;
 
 	constructor(HTMLContainer) {
 		if(HTMLContainer !== null) {
@@ -19,24 +20,24 @@ export class EDMFileListManager {
 		this.setButtonsBehaviors();
 	}
 
-	generateHTML(datas = null) {
+	generateHTML(data = null) {
 		let generatedHTML = "Aucun fichiers à afficher";
 
-		if(datas != null)
-			this.setDatas(datas);
+		if(data != null)
+			this.setData(data);
 
-		if(this.datas != null) {
+		if(this.data != null) {
 			generatedHTML = "<table><tr><td>Nom</td><td>Type</td><td>Propriétaire</td><td>Statut</td><td>Actions</td></tr>";
-			let nbFiles = this.datas.length;
+			let nbFiles = this.data.length;
 			for(let fileIndex = 0; fileIndex < nbFiles; fileIndex++) {
-				generatedHTML += '<tr><td>'+this.datas[fileIndex].name+'</td>';
-				generatedHTML += '<td>'+this.datas[fileIndex].file_type+'</td>';
-				generatedHTML += '<td>'+this.datas[fileIndex].owner+'</td>';
-				generatedHTML += '<td>'+this.datas[fileIndex].state+'</td>';
+				generatedHTML += '<tr><td>'+this.data[fileIndex].name+'</td>';
+				generatedHTML += '<td>'+this.data[fileIndex].file_type+'</td>';
+				generatedHTML += '<td>'+this.data[fileIndex].owner+'</td>';
+				generatedHTML += '<td>'+this.data[fileIndex].state+'</td>';
 				generatedHTML += '<td>';
-					// generatedHTML += '<a href="#approve'+this.datas[fileIndex].id+'" class="action-button" data-id="'+this.datas[fileIndex].id+'" data-action="next-step">Approuver</a> ';
-					generatedHTML += '<a href="#treat'+this.datas[fileIndex].id+'" class="action-button" data-id="'+this.datas[fileIndex].id+'" data-action="treat">Traiter</a> ';
-					generatedHTML += '<a href="#" class="action-button" data-id="'+this.datas[fileIndex].id+'" data-action="delete">Supprimer</a>';
+					// generatedHTML += '<a href="#approve'+this.data[fileIndex].id+'" class="action-button" data-id="'+this.data[fileIndex].id+'" data-action="next-step">Approuver</a> ';
+					generatedHTML += '<a href="#treat'+this.data[fileIndex].id+'" class="action-button" data-id="'+this.data[fileIndex].id+'" data-action="treat">Traiter</a> ';
+					generatedHTML += '<a href="#" class="action-button" data-id="'+this.data[fileIndex].id+'" data-action="delete">Supprimer</a>';
 				generatedHTML += '</td></tr>';
 			}
 			generatedHTML += "</table>";
@@ -49,24 +50,35 @@ export class EDMFileListManager {
 		if(event !== null) {
 			let wiper = new DataWiper('d-edm-file.php');
 			wiper.addEventListener(DataWiper.DATA_WIPED_EVENT, this.loadDatas.bind(this));
-			wiper.wipeDatas([['file_id', parseInt(event.target.dataset.id)]]);
+			wiper.wipeData([['file_id', parseInt(event.target.dataset.id)]]);
 		}
 	}
 
 	loadDatas(event = null) {
 		let fileListGrabber = new DataGrabber("r-edm-files.php");
 		let refreshDisplay = function() {
-			this.generateHTML(fileListGrabber.grabbedDatas.results);
+			this.generateHTML(fileListGrabber.grabbedData.results);
 			this.display();
 		};
 
-		fileListGrabber.getDatas(refreshDisplay.bind(this)
+		fileListGrabber.getData([], refreshDisplay.bind(this)
 			);
 	}
 
 	treatDatas(event = null) {
-		// ask backend script to extr&act data from the selected file
-		let fileDataExtractorGrabber = new ScriptExecutor("EDM/extract-data-from-file");
+		// ask backend script to extract data from the selected file
+		let executor = new ScriptExecutor("extract-data-from-file.php");
+		executor.executeScript({fileId: event.target.dataset.id}).then(
+			function(value) {
+				if(value.type == "fiche école") {
+					let confirmationPrompter = new SchoolSheetImporter(value.data);
+					confirmationPrompter.startPrompting();
+				}
+			},
+			function(error) {
+				console.log(error);
+			}
+		);
 	}
 
 	setButtonsBehaviors() {
@@ -81,7 +93,7 @@ export class EDMFileListManager {
 		}
 	}
 
-	setDatas(datas) {
-		this.datas = datas;
+	setData(data) {
+		this.data = data;
 	}
 }
